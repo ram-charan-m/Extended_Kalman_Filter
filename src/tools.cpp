@@ -60,12 +60,14 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 //           px_2 = px*px;
 //           py_2 = py*py;
 //         }
-        float Hj00 = px/(pow((px_2 + py_2),0.5));
-        float Hj01 = py/(pow((px_2 + py_2),0.5));
-        float Hj10 = -py/(px_2 + py_2);
-        float Hj11 = px/(px_2 + py_2);
+        float c0 = px_2 + py_2;
+        float c1 = sqrt(c0);        
+        float Hj00 = px/c1;
+        float Hj01 = py/c1;
+        float Hj10 = -py/c0;
+        float Hj11 = px/c0;
         float Hj20 = (vx*py_2 - vy*px*py)/(pow((px_2 + py_2),1.5));
-        float Hj21 = (vy*px_2 - vx*px*py)/(pow((px_2 + py_2),0.5));
+        float Hj21 = (vy*px_2 - vx*px*py)/(pow((px_2 + py_2),1.5));
         
         // compute the Jacobian matrix
         Hj << Hj00, Hj01, 0, 0,
