@@ -19,25 +19,15 @@ FusionEKF::FusionEKF() {
   is_initialized_ = false;
   previous_timestamp_ = 0;
 
-  // initializing EKF matrices
-
-  // Update Matrices
-  // Laser - measures in cartesian and only px and py
+  // initializing matrices that vary with sensor type (Jacobian is directly assigned to ekf_.H_ below)
   H_laser_ = MatrixXd(2, 4); // Measurement transformation matrix of Lidar
-  R_laser_ = MatrixXd(2, 2); // Measurement Covariance matrix of Lidar
-  
-  // Radar - measures in radial and range rho, bearing phi, radial velocity rho dot  
+  R_laser_ = MatrixXd(2, 2); // Measurement Covariance matrix of Lidar 
   R_radar_ = MatrixXd(3, 3); // Measurement covariance matrix of Radar  
-  
-  //measurement covariance matrix - laser
-  R_laser_ << 0.0225, 0,
+  R_laser_ << 0.0225, 0, //measurement covariance matrix - laser
               0, 0.0225;
-
-  //measurement covariance matrix - radar
-  R_radar_ << 0.09, 0, 0,
+  R_radar_ << 0.09, 0, 0, //measurement covariance matrix - radar
               0, 0.0009, 0,
               0, 0, 0.09;
-   
   H_laser_ << 1, 0, 0, 0, // Setting Laser Measurement transformation matrix
               0, 1, 0, 0;    
 }
@@ -135,21 +125,21 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   // 1. Using the sensor type to perform the update step. 2.Updating the state and covariance matrices.  
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
-    // TODO: Radar updates    
+    //Radar updates    
     cout<< "Sensor Type: RADAR" << endl;
     ekf_.R_ = R_radar_;
     ekf_.H_ = tools_.CalculateJacobian(ekf_.x_);  
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);  
   } 
   else {
-    // TODO: Laser updates
+    //Laser updates
     cout<< "Sensor Type: LIDAR" << endl;
     ekf_.H_ = H_laser_;
     ekf_.R_ = R_laser_;
     ekf_.Update(measurement_pack.raw_measurements_);
   }
 
-  // print the output  
+  // Print the output  
   cout << "x_ = " << ekf_.x_ << endl;
-//   cout << "P_ = " << ekf_.P_ << endl;
+  cout << "P_ = " << ekf_.P_ << endl;
 }

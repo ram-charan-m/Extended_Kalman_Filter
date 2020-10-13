@@ -51,7 +51,6 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   // check division by zero
   
   if((px && py)!=0){
-        // TODO: YOUR CODE HERE 
         float px_2 = px*px;
         float py_2 = py*py;
 //         if ((px_2 + py_2) < 0.0001){ // Avoiding NaNs 
