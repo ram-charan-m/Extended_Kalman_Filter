@@ -54,6 +54,12 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
         // TODO: YOUR CODE HERE 
         float px_2 = px*px;
         float py_2 = py*py;
+//         if ((px_2 + py_2) < 0.0001){ // Avoiding NaNs 
+//           px += 0.001;
+//           py += 0.001;
+//           px_2 = px*px;
+//           py_2 = py*py;
+//         }
         float Hj00 = px/(pow((px_2 + py_2),0.5));
         float Hj01 = py/(pow((px_2 + py_2),0.5));
         float Hj10 = -py/(px_2 + py_2);
@@ -71,4 +77,3 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   }
   return Hj;
 }
-

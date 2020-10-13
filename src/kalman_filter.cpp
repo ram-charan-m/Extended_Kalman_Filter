@@ -54,19 +54,16 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   float py = x_(1);
   float vx = x_(2);
   float vy = x_(3);
-  float phii = py/px;
   VectorXd Hf(3);
 
   if ((px && py)!=0){
-    float H_radar0 = pow((pow(px,2) + pow(py,2)),0.5);
-    while (phii < -M_PI){
-      phii = phii + 2*M_PI;
-    }
-    while (phii > M_PI) {
-      phii = phii - 2*M_PI;
-    }
-
-    float H_radar1 = atan(phii);
+    float H_radar0 = sqrt(px*px + py*py);
+//     if (H_radar0 < .0001) { // Avoiding close to zero producing NaNs
+//     px += .001;
+//     py += .001;
+//     H_radar0 = sqrt(px*px + py*py);
+//     }
+    float H_radar1 = atan2(py,px);
     float H_radar2 = (px*vx + py*vy)/H_radar0;
     Hf << H_radar0, H_radar1, H_radar2;
   }
@@ -75,6 +72,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   }    
     
   VectorXd y = z - Hf;
+  while (y(1) < -M_PI){
+      y(1) += 2*M_PI;
+    }
+    while (y(1) > M_PI) {
+      y(1) -= 2*M_PI;
+    }
   MatrixXd S = H_*P_*H_.transpose() + R_;
   MatrixXd K = P_*H_.transpose()*S.inverse();
   x_ = x_ + K*y;
